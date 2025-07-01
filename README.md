@@ -4,10 +4,10 @@ A web application to manage deliveries for Kiki's magical delivery service, buil
 
 # Project architecture 
 ```
-kiki-delivery-service/
-├── src/                     # Application
-│   ├── components/         # Business logic
-│   ├── pages/            # Domain models
-│   ├── public/      # External implementations
-│   └── server/  # Controllers, DTOs
+kiki-deliveryservice/
+├── src/                    
+│   ├── components/         
+│   ├── pages/           
+│   ├── public/     
+│   └── server/ 
 ```
