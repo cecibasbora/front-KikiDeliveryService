@@ -10,5 +10,5 @@ kiki-deliveryservice/
 │   ├── pages/           
 │   ├── public/     
 │   ├── server/ 
-    └── styles/ 
+│   └── styles/ 
 ```
