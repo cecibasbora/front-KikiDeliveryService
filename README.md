@@ -9,5 +9,6 @@ kiki-deliveryservice/
 │   ├── components/         
 │   ├── pages/           
 │   ├── public/     
-│   └── server/ 
+│   ├── server/ 
+    └── styles/ 
 ```
