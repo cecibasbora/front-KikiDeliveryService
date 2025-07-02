@@ -7,10 +7,16 @@
   },
   "dependencies": {
     "next": "latest",
-    "react": "latest",
-    "react-dom": "latest"
+    "react": "^19.1.0",
+    "react-dom": "latest",
+    "react-router": "^6.30.1",
+    "react-router-dom": "^6.30.1"
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "24.0.10",
+    "typescript": "5.8.3"
   }
 }

@@ -1,0 +1,92 @@
+/* src/components/DeliveryList.module.css */
+
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #f9f4e8;
+  background-image: linear-gradient(to bottom, #f9f4e8, #e8e0c9);
+  border-radius: 16px;
+  border: 1px solid #d4c9a8;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+
+.title {
+  color: #5a4a3a;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #d4c9a8;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listItem {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid #d4c9a8;
+}
+
+.deliveryInfo {
+  flex: 1;
+}
+
+.customerName {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #5a4a3a;
+  margin-bottom: 0.25rem;
+}
+
+.deliveryDetail {
+  color: #5a4a3a;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  align-self: flex-start;
+}
+
+.statusPending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.statusInProgress {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.statusDelivered {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.statusError {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.loading {
+  text-align: center;
+  color: #5a4a3a;
+  padding: 2rem;
+}
+
+.error {
+  color: #991b1b;
+  background-color: #fee2e2;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}

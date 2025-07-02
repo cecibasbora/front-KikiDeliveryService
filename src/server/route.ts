@@ -7,6 +7,12 @@ export interface Delivery {
   deliveryDate: string;
 }
 
+export async function fetchDeliveries(): Promise<Delivery[]> {
+  const response = await fetch(API_BASE_URL);
+  if (!response.ok) throw new Error('Failed to fetch deliveries');
+  return response.json();
+}
+
 export async function createDelivery(deliveryData: Omit<Delivery, 'id'>): Promise<Delivery> {
   const response = await fetch(API_BASE_URL, {
     method: 'POST',
