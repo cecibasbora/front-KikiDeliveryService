@@ -1,0 +1,74 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { fetchDeliveries, createDelivery, Delivery } from './route';
+
+const mockFetch = vi.fn();
+global.fetch = mockFetch;
+
+const mockDelivery: Delivery = {
+  id: '0001',
+  customerName: 'Ursula',
+  deliveryAddress:'Rua da floresta, 231',
+  deliveryDate: '2023-01-01'
+};
+
+describe('API Functions', () => {
+  beforeEach(() => {
+    mockFetch.mockClear();
+  });
+
+  describe('fetchDeliveries', () => {
+    it('should return deliveries on successful fetch', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve([mockDelivery])
+      });
+
+      const result = await fetchDeliveries();
+      expect(result).toEqual([mockDelivery]);
+      expect(fetch).toHaveBeenCalledWith('http://localhost:3333');
+    });
+
+    it('should throw error on failed fetch', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false
+      });
+      await expect(fetchDeliveries()).rejects.toThrow('Failed to fetch deliveries');
+    });
+  });
+
+  describe('createDelivery', () => {
+    it('should create and return a delivery', async () => {
+      const newDelivery = {
+        customerName: 'Jane Doe',
+        deliveryAddress: '456 Oak Ave',
+        deliveryDate: '2023-01-02'
+      };
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockDelivery)
+      });
+
+      const result = await createDelivery(newDelivery);
+      expect(result).toEqual(mockDelivery);
+      expect(fetch).toHaveBeenCalledWith('http://localhost:3333', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newDelivery)
+      });
+    });
+
+    it('should throw error on failed creation', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false
+      });
+
+      await expect(createDelivery({
+        customerName: 'Fail',
+        deliveryAddress: 'Error St',
+        deliveryDate: '2023-01-01'
+      })).rejects.toThrow('Failed to create delivery');
+    });
+  });
+});
