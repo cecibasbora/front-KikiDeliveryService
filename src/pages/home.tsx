@@ -9,7 +9,7 @@ const HomePage: React.FC = () => {
       
       <div className={styles.messageBox}>
         <h1 className={styles.title}>
-          Bem-vindo ao serviço de entregas da Kiki!
+          Bem-vinde ao serviço de entregas da Kiki!
         </h1>
         <p className={styles.subtitle}>
           Entregas mágicas por toda a cidade

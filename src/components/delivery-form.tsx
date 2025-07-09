@@ -54,6 +54,8 @@ export default function DeliveryForm() {
     setSuccess(false);
   };
 
+if (!user) return <div className={styles.container}>Faça login para solicitar entregas</div>;
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>
