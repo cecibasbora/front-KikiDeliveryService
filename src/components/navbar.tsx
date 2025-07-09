@@ -17,7 +17,7 @@ export default function Navbar() {
     document.body.style.padding = '0';
 
     if (user && typeof window !== 'undefined' && window.location.pathname === '/') {
-      router.push('/dashboard');
+      router.push('/entregas');
     }
     
     return () => {

@@ -8,7 +8,8 @@ const mockDelivery: Delivery = {
   id: '0001',
   customerName: 'Ursula',
   deliveryAddress:'Rua da floresta, 231',
-  deliveryDate: '2023-01-01'
+  deliveryDate: '2023-01-01',
+  userId: 'Yd98Sdh&'
 };
 
 describe('API Functions', () => {
@@ -25,7 +26,7 @@ describe('API Functions', () => {
 
       const result = await fetchDeliveries();
       expect(result).toEqual([mockDelivery]);
-      expect(fetch).toHaveBeenCalledWith('http://localhost:3333');
+      expect(fetch).toHaveBeenCalledWith('http://localhost:3333/entregas');
     });
 
     it('should throw error on failed fetch', async () => {
@@ -41,7 +42,8 @@ describe('API Functions', () => {
       const newDelivery = {
         customerName: 'Jane Doe',
         deliveryAddress: '456 Oak Ave',
-        deliveryDate: '2023-01-02'
+        deliveryDate: '2023-01-02',
+        userId: 'Yd98Sdh3&'
       };
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -67,7 +69,8 @@ describe('API Functions', () => {
       await expect(createDelivery({
         customerName: 'Fail',
         deliveryAddress: 'Error St',
-        deliveryDate: '2023-01-01'
+        deliveryDate: '2023-01-01',
+        userId: '2T72hJx'
       })).rejects.toThrow('Failed to create delivery');
     });
   });

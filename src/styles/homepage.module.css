@@ -1,0 +1,29 @@
+.container {
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.messageBox {
+  background-color: rgba(249, 244, 232, 0.85);
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border: 1px solid #d4c9a8;
+}
+
+.title {
+  color: #5a4a3a;
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  color: #5a4a3a;
+  font-size: 1.1rem;
+}

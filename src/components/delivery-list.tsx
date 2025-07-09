@@ -2,52 +2,62 @@
 
 import { useEffect, useState } from 'react';
 import { fetchDeliveries, Delivery } from '../server/route';
-import styles from '../styles/delivery-list.module.css'
+import styles from '../styles/delivery-list.module.css';
 import Image from 'next/image';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../service/firebase';
 
 export default function DeliveryList() {
-  const [deliveries, setDeliveries] = useState<Delivery[]>([]);
+  const [user] = useAuthState(auth);
+  const [allDeliveries, setAllDeliveries] = useState<Delivery[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const userDeliveries = allDeliveries.filter(delivery => delivery.userId === user?.uid);
+
   useEffect(() => {
-    async function loadDeliveries() {
+    async function loadAllDeliveries() {
       try {
         const data = await fetchDeliveries();
-        setDeliveries(data);
+        setAllDeliveries(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        console.error('Fetch error:', err);
+        setError('Erro ao carregar entregas. Tente novamente.');
       } finally {
         setLoading(false);
       }
     }
-    loadDeliveries();
+
+    loadAllDeliveries();
   }, []);
 
-  if (loading) return <div>Loading deliveries...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (!user) return <div className={styles.container}>Faça login para visualizar suas entregas</div>;
+  if (loading) return <div className={styles.container}>Carregando...</div>;
+  if (error) return <div className={styles.container}>{error}</div>;
 
   return (
-    <div className={styles.container}>   
+    <div className={styles.container}>
       <h2 className={styles.title}>
         <Image 
-            src="/package-icon.png" 
-            alt="Kiki's Delivery Logo" 
-            width={30}
-            height={30}
-        />     
-        <>     </>
-         Lista de entregas
-       </h2>
-      <ul className={styles.list}>
-        {deliveries.map((delivery) => (
-          <li key={delivery.id} className={styles.listItem}>
-            <div className="flex justify-between items-center">
+          src="/package-icon.png" 
+          alt="Ícone de entregas" 
+          width={30}
+          height={30}
+        />
+        Minhas Entregas
+      </h2>
+      
+      {userDeliveries.length === 0 ? (
+        <p className={styles.emptyMessage}>Nenhuma entrega registrada</p>
+      ) : (
+        <ul className={styles.list}>
+          {userDeliveries.map((delivery) => (
+            <li key={delivery.id} className={styles.listItem}>
               <div className={styles.deliveryInfo}>
-                <h3 className={styles.customerName}>{delivery.customerName}</h3>
-                <p className={styles.deliveryDetail}>{delivery.deliveryAddress}</p>
-                <p className={styles.deliveryDetail}>
-                  {new Date(delivery.deliveryDate).toLocaleDateString('pt-BR', {
+                <h3>{delivery.customerName}</h3>
+                <p>Endereço: {delivery.deliveryAddress}</p>
+                <p>
+                  Data: {new Date(delivery.deliveryDate).toLocaleDateString('pt-BR', {
                     day: '2-digit',
                     month: '2-digit',
                     year: 'numeric',
@@ -56,10 +66,10 @@ export default function DeliveryList() {
                   })}
                 </p>
               </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

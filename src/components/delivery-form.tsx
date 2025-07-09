@@ -1,8 +1,10 @@
 'use client';
-import { React, useState } from 'react';
+import { useState } from 'react';
 import { createDelivery } from "../server/route";
 import styles from '../styles/delivery-form.module.css';
 import Image from 'next/image';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../service/firebase';
 
 interface FormState {
   customerName: string;
@@ -11,6 +13,7 @@ interface FormState {
 }
 
 export default function DeliveryForm() {
+  const [user] = useAuthState(auth);
   const [form, setForm] = useState<FormState>({
     customerName: '',
     deliveryAddress: '',
@@ -26,10 +29,11 @@ export default function DeliveryForm() {
     setError(null);
     setSuccess(false);
 
-    try {
+   try {
       await createDelivery({
         ...form,
         deliveryDate: new Date(form.deliveryDate).toISOString(),
+        userId: user.uid // Include the user ID
       });
       setSuccess(true);
       setForm({

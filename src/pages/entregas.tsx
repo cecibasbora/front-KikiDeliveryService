@@ -2,7 +2,7 @@ import DeliveryList from '../components/delivery-list';
 import React from 'react';
 import Navbar from '../components/navbar';
 
-const EntregaFormsPage: React.FC = () => {
+const entregasPage: React.FC = () => {
   return (
     <div>
         <Navbar />
@@ -12,4 +12,4 @@ const EntregaFormsPage: React.FC = () => {
   );
 };
 
-export default EntregaFormsPage;
+export default entregasPage;

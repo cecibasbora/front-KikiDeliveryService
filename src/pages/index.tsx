@@ -1,11 +1,9 @@
-import Navbar from "../components/navbar"
-import DeliveryList from "../components/delivery-list";
+import HomePage from "./home"
 
 export default function App() {
   return (
       <div className="main">
-        <Navbar />
-        {/* <DeliveryList /> */}
+        <HomePage />
         </div>
   )
 }

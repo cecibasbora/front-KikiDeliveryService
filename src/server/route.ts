@@ -5,10 +5,11 @@ export interface Delivery {
   customerName: string;
   deliveryAddress: string;
   deliveryDate: string;
+  userId: string; 
 }
 
 export async function fetchDeliveries(): Promise<Delivery[]> {
-  const response = await fetch(API_BASE_URL);
+  const response = await fetch(`${API_BASE_URL}/entregas`); 
   if (!response.ok) throw new Error('Failed to fetch deliveries');
   return response.json();
 }
@@ -23,4 +24,4 @@ export async function createDelivery(deliveryData: Omit<Delivery, 'id'>): Promis
   });
   if (!response.ok) throw new Error('Failed to create delivery');
   return response.json();
-}
+}  
