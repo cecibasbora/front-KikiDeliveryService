@@ -1,77 +1,60 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fetchDeliveries, createDelivery, Delivery } from './route';
+import { describe, it, expect, vi, Mock, beforeEach } from 'vitest';
+import { fetchDeliveries, createDelivery } from './route';
 
-const mockFetch = vi.fn();
-global.fetch = mockFetch;
+beforeEach(() => {
+  global.fetch = vi.fn();
+});
 
-const mockDelivery: Delivery = {
-  id: '0001',
-  customerName: 'Ursula',
-  deliveryAddress:'Rua da floresta, 231',
-  deliveryDate: '2023-01-01',
-  userId: 'Yd98Sdh&'
-};
-
-describe('API Functions', () => {
-  beforeEach(() => {
-    mockFetch.mockClear();
-  });
-
-  describe('fetchDeliveries', () => {
-    it('should return deliveries on successful fetch', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve([mockDelivery])
-      });
-
-      const result = await fetchDeliveries();
-      expect(result).toEqual([mockDelivery]);
-      expect(fetch).toHaveBeenCalledWith('http://localhost:3333/entregas');
-    });
-
-    it('should throw error on failed fetch', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false
-      });
-      await expect(fetchDeliveries()).rejects.toThrow('Failed to fetch deliveries');
-    });
-  });
-
-  describe('createDelivery', () => {
-    it('should create and return a delivery', async () => {
-      const newDelivery = {
-        customerName: 'Jane Doe',
-        deliveryAddress: '456 Oak Ave',
-        deliveryDate: '2023-01-02',
-        userId: 'Yd98Sdh3&'
-      };
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockDelivery)
-      });
-
-      const result = await createDelivery(newDelivery);
-      expect(result).toEqual(mockDelivery);
-      expect(fetch).toHaveBeenCalledWith('http://localhost:3333', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newDelivery)
-      });
-    });
-
-    it('should throw error on failed creation', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false
-      });
-
-      await expect(createDelivery({
-        customerName: 'Fail',
-        deliveryAddress: 'Error St',
+describe('fetchDeliveries', () => {
+  it('gets deliveries from the API', async () => {
+    const mockData = [{  
+        id: '0001',
+        customerName: 'Ursula',
+        deliveryAddress:'Rua da floresta, 231',
         deliveryDate: '2023-01-01',
-        userId: '2T72hJx'
-      })).rejects.toThrow('Failed to create delivery');
+        userId: 'Yd98Sdh&' }];
+    (fetch as Mock).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockData),
     });
+
+    const result = await fetchDeliveries();
+    expect(result).toEqual(mockData);
+    expect(fetch).toHaveBeenCalledWith('http://localhost:3333/entregas');
+  });
+
+  it('throws error when request fails', async () => {
+    (fetch as Mock).mockResolvedValue({ ok: false });
+    await expect(fetchDeliveries()).rejects.toThrow('Failed to fetch deliveries');
+  });
+});
+
+describe('createDelivery', () => {
+  it('sends new delivery to the API', async () => {
+    const newDelivery = { 
+        customerName: 'Tombo',
+        deliveryAddress:'Rua da floresta, 231',
+        deliveryDate: '2024-02-01',
+        userId: 'Yd98Sdh&'
+     };
+    const mockResponse = { id: '2', ...newDelivery };
+    
+    (fetch as Mock).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockResponse),
+    });
+
+    const result = await createDelivery(newDelivery);
+    expect(result).toEqual(mockResponse);
+    expect(fetch).toHaveBeenCalledWith('http://localhost:3333', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newDelivery),
+    });
+  });
+
+  it('throws error when creation fails', async () => {
+    (fetch as Mock).mockResolvedValue({ ok: false });
+    await expect(createDelivery({} as any)).rejects.toThrow('Failed to create delivery');
   });
 });

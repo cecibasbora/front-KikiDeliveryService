@@ -5,6 +5,7 @@ import styles from '../styles/delivery-form.module.css';
 import Image from 'next/image';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../service/firebase';
+import React from 'react';
 
 interface FormState {
   customerName: string;
@@ -33,7 +34,7 @@ export default function DeliveryForm() {
       await createDelivery({
         ...form,
         deliveryDate: new Date(form.deliveryDate).toISOString(),
-        userId: user.uid // Include the user ID
+        userId: user.uid 
       });
       setSuccess(true);
       setForm({
