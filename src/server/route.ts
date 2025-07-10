@@ -8,8 +8,8 @@ export interface Delivery {
   userId: string; 
 }
 
-export async function fetchDeliveries(): Promise<Delivery[]> {
-  const response = await fetch(`${API_BASE_URL}/entregas`); 
+export async function fetchDeliveries(userId: string): Promise<Delivery[]> {
+  const response = await fetch(`${API_BASE_URL}/entregas?userId=${userId}`); 
   if (!response.ok) throw new Error('Failed to fetch deliveries');
   return response.json();
 }

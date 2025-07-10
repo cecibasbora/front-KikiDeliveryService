@@ -9,17 +9,17 @@ import { auth } from '../service/firebase';
 
 export default function DeliveryList() {
   const [user] = useAuthState(auth);
-  const [allDeliveries, setAllDeliveries] = useState<Delivery[]>([]);
+  const [userDeliveries, setUserDeliveries] = useState<Delivery[]>([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const userDeliveries = allDeliveries.filter(delivery => delivery.userId === user?.uid);
-
   useEffect(() => {
-    async function loadAllDeliveries() {
+    async function loadUserDeliveries() { 
+      if (!user?.uid) return; 
+      
       try {
-        const data = await fetchDeliveries();
-        setAllDeliveries(data);
+        const data = await fetchDeliveries(user.uid); 
+        setUserDeliveries(data);
       } catch (err) {
         console.error('Fetch error:', err);
         setError('Erro ao carregar entregas. Tente novamente.');
@@ -28,8 +28,8 @@ export default function DeliveryList() {
       }
     }
 
-    loadAllDeliveries();
-  }, []);
+    loadUserDeliveries();
+  }, [user]);
 
   if (!user) return <div className={styles.container}>Faça login para visualizar suas entregas</div>;
   if (loading) return <div className={styles.container}>Carregando...</div>;
