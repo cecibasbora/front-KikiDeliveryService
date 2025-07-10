@@ -6,28 +6,38 @@ beforeEach(() => {
 });
 
 describe('fetchDeliveries', () => {
-  it('gets deliveries from the API', async () => {
+  const API_BASE_URL = 'http://localhost:3333';
+  const testUserId = 'Yd98Sdh&';
+  
+  it('gets filtered deliveries from the API using userId', async () => {
     const mockData = [{  
-        id: '0001',
-        customerName: 'Ursula',
-        deliveryAddress:'Rua da floresta, 231',
-        deliveryDate: '2023-01-01',
-        userId: 'Yd98Sdh&' }];
+      id: '0001',
+      customerName: 'Ursula',
+      deliveryAddress: 'Rua da floresta, 231',
+      deliveryDate: '2023-01-01',
+      userId: testUserId 
+    }];
+    
     (fetch as Mock).mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(mockData),
     });
 
-    const result = await fetchDeliveries();
+    const result = await fetchDeliveries(testUserId);
+    
     expect(result).toEqual(mockData);
-    expect(fetch).toHaveBeenCalledWith('http://localhost:3333/entregas');
+    expect(fetch).toHaveBeenCalledWith(
+      `${API_BASE_URL}/entregas?userId=${testUserId}`
+    );
   });
 
   it('throws error when request fails', async () => {
     (fetch as Mock).mockResolvedValue({ ok: false });
-    await expect(fetchDeliveries()).rejects.toThrow('Failed to fetch deliveries');
+    await expect(fetchDeliveries(testUserId))
+      .rejects.toThrow('Failed to fetch deliveries');
   });
 });
+
 
 describe('createDelivery', () => {
   it('sends new delivery to the API', async () => {

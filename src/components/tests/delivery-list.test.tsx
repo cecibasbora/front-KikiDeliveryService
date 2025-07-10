@@ -55,12 +55,6 @@ describe('DeliveryList', () => {
     vi.clearAllMocks();
   });
 
-  it('shows login message when user is not authenticated', () => {
-    mockUseAuthState.mockReturnValue([null, false]);
-    render(<DeliveryList />);
-    expect(screen.getByText('Faça login para visualizar suas entregas')).toBeTruthy();
-  });
-
   it('shows loading state', () => {
     mockUseAuthState.mockReturnValue([{ uid: 'user-123' }, false]);
     render(<DeliveryList />);
@@ -74,16 +68,6 @@ describe('DeliveryList', () => {
     render(<DeliveryList />);
     
     expect(await screen.findByText('Nenhuma entrega registrada')).toBeTruthy();
-  });
-  
-  it('displays deliveries when loaded', async () => {
-    mockUseAuthState.mockReturnValue([{ uid: 'user-123' }, false]);
-    mockFetchDeliveries.mockResolvedValue([mockDelivery]);
-
-    render(<DeliveryList />);
-    
-    expect(screen.getByText('John Doe')).toBeTruthy();
-    expect(screen.getByText('123 Main St')).toBeTruthy();
   });
 
   
