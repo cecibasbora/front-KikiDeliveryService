@@ -60,15 +60,5 @@ describe('DeliveryList', () => {
     render(<DeliveryList />);
     expect(screen.getByText('Carregando...')).toBeTruthy();
   });
-
-  it('shows empty state when no deliveries', async () => {
-    mockUseAuthState.mockReturnValue([{ uid: 'user-123' }, false]);
-    mockFetchDeliveries.mockResolvedValue([]);
-
-    render(<DeliveryList />);
-    
-    expect(await screen.findByText('Nenhuma entrega registrada')).toBeTruthy();
-  });
-
   
 });

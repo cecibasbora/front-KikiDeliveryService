@@ -6,7 +6,7 @@ beforeEach(() => {
 });
 
 describe('fetchDeliveries', () => {
-  const API_BASE_URL = 'http://localhost:3333';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const testUserId = 'Yd98Sdh&';
   
   it('gets filtered deliveries from the API using userId', async () => {
@@ -56,7 +56,7 @@ describe('createDelivery', () => {
 
     const result = await createDelivery(newDelivery);
     expect(result).toEqual(mockResponse);
-    expect(fetch).toHaveBeenCalledWith('http://localhost:3333', {
+    expect(fetch).toHaveBeenCalledWith(process.env.NEXT_PUBLIC_API_BASE_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newDelivery),
