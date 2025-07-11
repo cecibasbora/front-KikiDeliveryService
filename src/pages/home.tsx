@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from '../components/navbar';
-import styles from '../styles/HomePage.module.css';
+import styles from '../styles/homepage.module.css';
 
 const HomePage: React.FC = () => {
   return (
