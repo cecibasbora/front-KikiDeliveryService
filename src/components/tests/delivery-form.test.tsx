@@ -5,7 +5,7 @@ import React from 'react';
 
 vi.mock('react-firebase-hooks/auth', () => ({
   useAuthState: vi.fn(() => [
-    { uid: 'test-user', displayName: 'Test User' }, 
+    { uid: 'test-user', displayName: 'Test User', deliveryAddress: 'rua 123' }, 
     false,
     null 
   ])
@@ -44,8 +44,8 @@ describe('DeliveryForm Component', () => {
   it('submits form data', async () => {
     render(<DeliveryForm />);
     
-    fireEvent.change(screen.getByLabelText('Nome do cliente'), {
-      target: { value: 'Test Customer' }
+    fireEvent.change(screen.getByLabelText('Endereço de entrega'), {
+      target: { value: 'rua 123' }
     });
     fireEvent.click(screen.getByText('Criar'));
   });

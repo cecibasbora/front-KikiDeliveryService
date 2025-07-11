@@ -8,7 +8,7 @@ import { auth } from '../service/firebase';
 import React from 'react';
 
 interface FormState {
-  customerName: string;
+  // customerName: string;
   deliveryAddress: string;
   deliveryDate: string;
 }
@@ -16,7 +16,7 @@ interface FormState {
 export default function DeliveryForm() {
   const [user] = useAuthState(auth);
   const [form, setForm] = useState<FormState>({
-    customerName: '',
+    // customerName: '',
     deliveryAddress: '',
     deliveryDate: ''
   });
@@ -34,11 +34,12 @@ export default function DeliveryForm() {
       await createDelivery({
         ...form,
         deliveryDate: new Date(form.deliveryDate).toISOString(),
-        userId: user.uid 
+        userId: user.uid,
+        customerName: user.displayName
       });
       setSuccess(true);
       setForm({
-        customerName: '',
+        // customerName: '',
         deliveryAddress: '',
         deliveryDate: '',
       });
@@ -69,7 +70,7 @@ if (!user) return <div className={styles.container}>Faça login para solicitar e
       </h1>
       
       <form onSubmit={handleSubmit} className={styles.form}>
-        <div className={styles.formGroup}>
+        {/* <div className={styles.formGroup}>
           <label htmlFor="customerName" className={styles.label}>
             Nome do cliente
           </label>
@@ -82,7 +83,7 @@ if (!user) return <div className={styles.container}>Faça login para solicitar e
             disabled={isSubmitting}
             className={styles.input}
           />
-        </div>
+        </div> */}
 
         <div className={styles.formGroup}>
           <label htmlFor="deliveryAddress" className={styles.label}>
