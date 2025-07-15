@@ -1,14 +1,12 @@
 'use client';
-import { useState } from 'react';
-import { createDelivery } from "../server/route";
+import { useState, useEffect } from 'react';
+import { createDelivery, fetchDeliveries } from "../server/route";
 import styles from '../styles/delivery-form.module.css';
 import Image from 'next/image';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../service/firebase';
-import React from 'react';
 
 interface FormState {
-  // customerName: string;
   deliveryAddress: string;
   deliveryDate: string;
 }
@@ -16,13 +14,23 @@ interface FormState {
 export default function DeliveryForm() {
   const [user] = useAuthState(auth);
   const [form, setForm] = useState<FormState>({
-    // customerName: '',
     deliveryAddress: '',
     deliveryDate: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [savedAddresses, setSavedAddresses] = useState<string[]>([]);
+  const [showNewAddress, setShowNewAddress] = useState(false);
+
+  useEffect(() => {
+    if (user?.uid) {
+      fetchDeliveries(user.uid).then(deliveries => {
+        const addresses = [...new Set(deliveries.map(d => d.deliveryAddress))];
+        setSavedAddresses(addresses);
+      });
+    }
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,19 +38,19 @@ export default function DeliveryForm() {
     setError(null);
     setSuccess(false);
 
-   try {
+    try {
       await createDelivery({
         ...form,
         deliveryDate: new Date(form.deliveryDate).toISOString(),
-        userId: user.uid,
-        customerName: user.displayName
+        userId: user?.uid || '',
+        customerName: user?.displayName || ''
       });
       setSuccess(true);
       setForm({
-        // customerName: '',
         deliveryAddress: '',
         deliveryDate: '',
       });
+      setShowNewAddress(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create delivery');
     } finally {
@@ -55,49 +63,72 @@ export default function DeliveryForm() {
     setSuccess(false);
   };
 
-if (!user) return <div className={styles.container}>Faça login para solicitar entregas</div>;
+  if (!user) return <div className={styles.container}>Faça login para solicitar entregas</div>;
 
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>
         <Image 
-            src="/delivery-icon.png" 
-            alt="Kiki's Delivery Logo" 
-            width={40}
-            height={40}
-          />        
+          src="/delivery-icon.png" 
+          alt="Kiki's Delivery Logo" 
+          width={40}
+          height={40}
+        />        
         Criar entrega
       </h1>
       
       <form onSubmit={handleSubmit} className={styles.form}>
-        {/* <div className={styles.formGroup}>
-          <label htmlFor="customerName" className={styles.label}>
-            Nome do cliente
-          </label>
-          <input
-            id="customerName"
-            type="text"
-            value={form.customerName}
-            onChange={(e) => setForm({...form, customerName: e.target.value})}
-            required
-            disabled={isSubmitting}
-            className={styles.input}
-          />
-        </div> */}
-
         <div className={styles.formGroup}>
           <label htmlFor="deliveryAddress" className={styles.label}>
             Endereço de entrega
           </label>
-          <input
-            id="deliveryAddress"
-            type="text"
-            value={form.deliveryAddress}
-            onChange={(e) => setForm({...form, deliveryAddress: e.target.value})}
-            required
-            disabled={isSubmitting}
-            className={styles.input}
-          />
+          
+          {!showNewAddress && savedAddresses.length > 0 ? (
+            <>
+              <select
+                id="deliveryAddress"
+                value={form.deliveryAddress}
+                onChange={(e) => setForm({...form, deliveryAddress: e.target.value})}
+                required
+                disabled={isSubmitting}
+                className={styles.input}
+              >
+                <option value="">Selecione um endereço salvo</option>
+                {savedAddresses.map((address) => (
+                  <option key={address} value={address}>{address}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => setShowNewAddress(true)}
+                className={styles.addAddressButton}
+              >
+                + Adicionar novo endereço
+              </button>
+            </>
+          ) : (
+            <>
+              <input
+                id="deliveryAddress"
+                type="text"
+                value={form.deliveryAddress}
+                onChange={(e) => setForm({...form, deliveryAddress: e.target.value})}
+                required
+                disabled={isSubmitting}
+                className={styles.input}
+                placeholder="Digite o endereço completo"
+              />
+              {savedAddresses.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowNewAddress(false)}
+                  className={styles.useSavedButton}
+                >
+                  Usar endereço salvo
+                </button>
+              )}
+            </>
+          )}
         </div>
 
         <div className={styles.formGroup}>
@@ -120,14 +151,10 @@ if (!user) return <div className={styles.container}>Faça login para solicitar e
           disabled={isSubmitting}
           className={styles.submitButton}
         >
-          {isSubmitting ? (
-            <>
-              <span className="spinner"></span>
-              Processando...
-            </>
-          ) : 'Criar'}
+          {isSubmitting ? 'Processando...' : 'Criar entrega'}
         </button>
       </form>
+
       {error && (
         <div className={`${styles.notification} ${styles.errorNotification}`}>
           <span>⚠️</span>

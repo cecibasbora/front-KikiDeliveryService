@@ -50,6 +50,7 @@
   background-color: #fffdf6;
   font-family: inherit;
   font-size: 1rem;
+  box-sizing: border-box;
 }
 
 .submitButton {
@@ -105,3 +106,29 @@
   cursor: pointer;
   margin-left: 1rem;
 }
+
+.addAddressButton {
+  background: none;
+  border: none;
+  color: rgb(163, 0, 0);
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-decoration: underline;
+  padding: 0.25rem 0;
+  display: inline-block;
+}
+
+.useSavedButton {
+  background: none;
+  border: none;
+  color: #5a4a3a;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-decoration: underline;
+  padding: 0.25rem 0;
+  display: inline-block;
+}
+
+
