@@ -5,6 +5,7 @@ import styles from '../styles/delivery-form.module.css';
 import Image from 'next/image';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../service/firebase';
+import React from 'react';
 
 interface FormState {
   deliveryAddress: string;
@@ -151,7 +152,7 @@ export default function DeliveryForm() {
           disabled={isSubmitting}
           className={styles.submitButton}
         >
-          {isSubmitting ? 'Processando...' : 'Criar entrega'}
+          {isSubmitting ? 'Processando...' : 'Criar'}
         </button>
       </form>
 

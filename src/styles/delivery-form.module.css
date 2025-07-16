@@ -122,7 +122,7 @@
 .useSavedButton {
   background: none;
   border: none;
-  color: #5a4a3a;
+  color: rgb(163, 0, 0);
   cursor: pointer;
   font-size: 0.9rem;
   margin-top: 0.5rem;
