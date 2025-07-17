@@ -7,7 +7,8 @@ export interface Delivery {
 }
 
 export async function fetchDeliveries(userId: string): Promise<Delivery[]> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/entregas?userId=${userId}`); 
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/entregas/${userId}`); 
   if (!response.ok) throw new Error('Failed to fetch deliveries');
   return response.json();
 }

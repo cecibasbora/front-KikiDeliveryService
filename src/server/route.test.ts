@@ -27,7 +27,7 @@ describe('fetchDeliveries', () => {
     
     expect(result).toEqual(mockData);
     expect(fetch).toHaveBeenCalledWith(
-      `${API_BASE_URL}/entregas?userId=${testUserId}`
+      `${API_BASE_URL}/entregas/${testUserId}`
     );
   });
 
