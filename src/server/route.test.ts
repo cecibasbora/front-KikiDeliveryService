@@ -68,3 +68,9 @@ describe('createDelivery', () => {
     await expect(createDelivery({} as any)).rejects.toThrow('Failed to create delivery');
   });
 });
+
+describe('deleteDelivery', () => {
+  it('delete the delivery', async () => {
+    
+  });
+});

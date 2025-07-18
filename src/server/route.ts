@@ -24,3 +24,16 @@ export async function createDelivery(deliveryData: Omit<Delivery, 'id'>): Promis
   if (!response.ok) throw new Error('Failed to create delivery');
   return response.json();
 }  
+
+export async function deleteDelivery(id: string): Promise<void> {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/entregas/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  
+  if (!response.ok) throw new Error('Failed to delete delivery');
+  return;
+}

@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { fetchDeliveries, Delivery } from '../server/route';
+import { fetchDeliveries, Delivery, deleteDelivery } from '../server/route'; // Import deleteDelivery
 import styles from '../styles/delivery-list.module.css';
 import Image from 'next/image';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -12,6 +12,7 @@ export default function DeliveryList() {
   const [userDeliveries, setUserDeliveries] = useState<Delivery[]>([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null); 
 
   useEffect(() => {
     async function loadUserDeliveries() { 
@@ -30,6 +31,21 @@ export default function DeliveryList() {
 
     loadUserDeliveries();
   }, [user]);
+
+  const handleDelete = async (deliveryId: string) => {
+    if (!window.confirm('Tem certeza que deseja excluir esta entrega?')) return;
+    
+    try {
+      setDeletingId(deliveryId);
+      await deleteDelivery(deliveryId);
+      setUserDeliveries(userDeliveries.filter(d => d.id !== deliveryId));
+    } catch (err) {
+      console.error('Delete error:', err);
+      setError('Erro ao excluir entrega. Tente novamente.');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   if (!user) return <div className={styles.container}>Faça login para visualizar suas entregas</div>;
   if (loading) return <div className={styles.container}>Carregando...</div>;
@@ -66,6 +82,13 @@ export default function DeliveryList() {
                   })}
                 </p>
               </div>
+              <button
+                onClick={() => handleDelete(delivery.id)}
+                disabled={deletingId === delivery.id}
+                className={styles.deleteButton}
+              >
+                {deletingId === delivery.id ? 'Excluindo...' : 'Excluir'}
+              </button>
             </li>
           ))}
         </ul>
