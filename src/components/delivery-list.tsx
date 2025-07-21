@@ -6,6 +6,7 @@ import styles from '../styles/delivery-list.module.css';
 import Image from 'next/image';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../service/firebase';
+import Link from 'next/link';
 
 export default function DeliveryList() {
   const [user] = useAuthState(auth);
@@ -82,6 +83,11 @@ export default function DeliveryList() {
                   })}
                 </p>
               </div>
+              <Link href="/editar-entrega">
+              <button className={styles.editButton}>
+                Editar
+              </button>
+              </Link>
               <button
                 onClick={() => handleDelete(delivery.id)}
                 disabled={deletingId === delivery.id}
