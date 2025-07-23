@@ -1,11 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { createDelivery, fetchDeliveries } from "../server/route";
+import { createDelivery } from "../server/route";
 import styles from '../styles/delivery-form.module.css';
 import Image from 'next/image';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../service/firebase';
 import React from 'react';
+import useDeliveryStore from '../stores/delivery-store'; 
 
 interface FormState {
   deliveryAddress: string;
@@ -13,7 +14,7 @@ interface FormState {
 }
 
 export default function DeliveryForm() {
-  const [user] = useAuthState(auth);
+   const [user] = useAuthState(auth);
   const [form, setForm] = useState<FormState>({
     deliveryAddress: '',
     deliveryDate: ''
@@ -21,24 +22,24 @@ export default function DeliveryForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [savedAddresses, setSavedAddresses] = useState<string[]>([]);
   const [showNewAddress, setShowNewAddress] = useState(false);
 
+   // Usando Zustand para acessar as entregas
+  const { deliveries, fetchDeliveries } = useDeliveryStore();
+  const savedAddresses = [...new Set(deliveries.map(d => d.deliveryAddress))];
+
   useEffect(() => {
-    if (user?.uid) {
-      fetchDeliveries(user.uid).then(deliveries => {
-        const addresses = [...new Set(deliveries.map(d => d.deliveryAddress))];
-        setSavedAddresses(addresses);
-      });
+    if (user?.uid && deliveries.length === 0) {
+      fetchDeliveries(user.uid);
     }
-  }, [user]);
+  }, [user, fetchDeliveries, deliveries.length]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
     setSuccess(false);
-
+  //Pretendo usar a loja do zustand para os outros métodos
     try {
       await createDelivery({
         ...form,

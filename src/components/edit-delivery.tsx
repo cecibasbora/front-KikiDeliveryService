@@ -1,18 +1,21 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { updateDelivery, fetchDeliveries } from "../server/route";
+import { useRouter } from 'next/navigation';
+import { updateDelivery } from "../server/route";
 import styles from '../styles/delivery-form.module.css';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../service/firebase';
 import React from 'react';
+import useDeliveryStore from '../stores/delivery-store';
 
 interface FormState {
   deliveryAddress: string;
   deliveryDate: string;
 }
 
-export default function EditEvent() {
+export default function EditDelivery() {
   const [user] = useAuthState(auth);
+  const router = useRouter();
   const [form, setForm] = useState<FormState>({
     deliveryAddress: '',
     deliveryDate: ''
@@ -20,31 +23,34 @@ export default function EditEvent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [savedAddresses, setSavedAddresses] = useState<string[]>([]);
   const [showNewAddress, setShowNewAddress] = useState(false);
-  const [deliveryId, setDeliveryId] = useState<string>(''); 
+  const [deliveryId, setDeliveryId] = useState<string | null>(null);
+  const { deliveries } = useDeliveryStore();
+  const savedAddresses = [...new Set(deliveries.map(d => d.deliveryAddress))];
 
   useEffect(() => {
-    if (user?.uid) {
-      fetchDeliveries(user.uid).then(deliveries => {
-        const addresses = [...new Set(deliveries.map(d => d.deliveryAddress))];
-        setSavedAddresses(addresses);
-        
-        if (deliveries.length > 0) {
-          const firstDelivery = deliveries[0];
-          setDeliveryId(firstDelivery.id);
-          setForm({
-            deliveryAddress: firstDelivery.deliveryAddress,
-            deliveryDate: firstDelivery.deliveryDate.split('T')[0] + 'T' + 
-                         firstDelivery.deliveryDate.split('T')[1].slice(0, 5)
-          });
-        }
-      });
+    const pathParts = window.location.pathname.split('/');
+    const id = pathParts[pathParts.length - 1];
+    setDeliveryId(id);
+  }, []);
+
+   // Usando Zustand para acessar as entregas
+  useEffect(() => {
+    if (deliveryId && deliveries.length > 0) {
+      const delivery = deliveries.find(d => d.id === deliveryId);
+      if (delivery) {
+        setForm({
+          deliveryAddress: delivery.deliveryAddress,
+          deliveryDate: new Date(delivery.deliveryDate).toISOString().slice(0, 16)
+        });
+      }
     }
-  }, [user]);
+  }, [deliveryId, deliveries]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!deliveryId) return;
+    
     setIsSubmitting(true);
     setError(null);
     setSuccess(false);
@@ -55,8 +61,9 @@ export default function EditEvent() {
         deliveryDate: new Date(form.deliveryDate).toISOString()
       });
       setSuccess(true);
+      setTimeout(() => router.push('/'), 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update delivery');
+      setError(err instanceof Error ? err.message : 'Falha ao atualizar entrega');
     } finally {
       setIsSubmitting(false);
     }
@@ -71,7 +78,7 @@ export default function EditEvent() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>      
+      <h1 className={styles.title}>   
         Editar entrega
       </h1>
       
@@ -111,7 +118,6 @@ export default function EditEvent() {
                 type="text"
                 value={form.deliveryAddress}
                 onChange={(e) => setForm({...form, deliveryAddress: e.target.value})}
-                required
                 disabled={isSubmitting}
                 className={styles.input}
                 placeholder="Digite o endereço completo"
@@ -138,7 +144,6 @@ export default function EditEvent() {
             type="datetime-local"
             value={form.deliveryDate}
             onChange={(e) => setForm({...form, deliveryDate: e.target.value})}
-            required
             disabled={isSubmitting}
             className={styles.input}
           />
@@ -149,7 +154,7 @@ export default function EditEvent() {
           disabled={isSubmitting}
           className={styles.submitButton}
         >
-          {isSubmitting ? 'Salvando...' : 'Salvar alterações'}
+          {isSubmitting ? 'Atualizando...' : 'Atualizar'}
         </button>
       </form>
 

@@ -1,45 +1,33 @@
 'use client';
-import React from 'react';
-import { useEffect, useState } from 'react';
-import { fetchDeliveries, Delivery, deleteDelivery } from '../server/route'; // Import deleteDelivery
+import React, { useEffect, useState } from 'react';
+import { deleteDelivery } from '../server/route';
 import styles from '../styles/delivery-list.module.css';
 import Image from 'next/image';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../service/firebase';
 import Link from 'next/link';
+import useDeliveryStore from '../stores/delivery-store'; 
 
 export default function DeliveryList() {
   const [user] = useAuthState(auth);
-  const [userDeliveries, setUserDeliveries] = useState<Delivery[]>([]); 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null); 
+  const [error, setError] = useState<string | null>(null);
+  const { deliveries, isLoading, fetchDeliveries } = useDeliveryStore();
 
+   // Usando Zustand para acessar as entregas
   useEffect(() => {
-    async function loadUserDeliveries() { 
-      if (!user?.uid) return; 
-      
-      try {
-        const data = await fetchDeliveries(user.uid); 
-        setUserDeliveries(data);
-      } catch (err) {
-        console.error('Fetch error:', err);
-        setError('Erro ao carregar entregas. Tente novamente.');
-      } finally {
-        setLoading(false);
-      }
+    if (user?.uid) {
+      fetchDeliveries(user.uid);
     }
+  }, [user, fetchDeliveries]);
 
-    loadUserDeliveries();
-  }, [user]);
-
+  //Pretendo usar a loja do zustand para os outros métodos
   const handleDelete = async (deliveryId: string) => {
     if (!window.confirm('Tem certeza que deseja excluir esta entrega?')) return;
-    
     try {
       setDeletingId(deliveryId);
       await deleteDelivery(deliveryId);
-      setUserDeliveries(userDeliveries.filter(d => d.id !== deliveryId));
+      if (user?.uid) fetchDeliveries(user.uid);
     } catch (err) {
       console.error('Delete error:', err);
       setError('Erro ao excluir entrega. Tente novamente.');
@@ -49,7 +37,7 @@ export default function DeliveryList() {
   };
 
   if (!user) return <div className={styles.container}>Faça login para visualizar suas entregas</div>;
-  if (loading) return <div className={styles.container}>Carregando...</div>;
+  if (isLoading) return <div className={styles.container}>Carregando...</div>;
   if (error) return <div className={styles.container}>{error}</div>;
 
   return (
@@ -64,11 +52,11 @@ export default function DeliveryList() {
         Minhas Entregas
       </h2>
       
-      {userDeliveries.length === 0 ? (
+      {deliveries.length === 0 ? (
         <p className={styles.emptyMessage}>Nenhuma entrega registrada</p>
       ) : (
         <ul className={styles.list}>
-          {userDeliveries.map((delivery) => (
+          {deliveries.map((delivery) => (
             <li key={delivery.id} className={styles.listItem}>
               <div className={styles.deliveryInfo}>
                 <h3>{delivery.customerName}</h3>
@@ -83,10 +71,10 @@ export default function DeliveryList() {
                   })}
                 </p>
               </div>
-              <Link href="/editar-entrega">
-              <button className={styles.editButton}>
-                Editar
-              </button>
+              <Link href={`/editar-entrega/${delivery.id}`}>
+                <button className={styles.editButton}>
+                  Editar
+                </button>
               </Link>
               <button
                 onClick={() => handleDelete(delivery.id)}
