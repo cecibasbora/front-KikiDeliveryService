@@ -37,3 +37,26 @@ export async function deleteDelivery(id: string): Promise<void> {
   if (!response.ok) throw new Error('Failed to delete delivery');
   return;
 }
+
+export async function updateDelivery(
+  id: string, 
+  updateData: Partial<Omit<Delivery, 'id' | 'userId'>>
+): Promise<Delivery> {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/entregas/${id}`, 
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updateData),
+    }
+  );
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to update delivery');
+  }
+  
+  return response.json();
+}
