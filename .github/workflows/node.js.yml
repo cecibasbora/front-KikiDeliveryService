@@ -34,6 +34,8 @@ jobs:
         cache: 'npm'
 
     - run: npm ci
+    - run: npm test
+    
   Deploy-Production:
     needs: build 
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
