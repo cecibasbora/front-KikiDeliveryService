@@ -26,23 +26,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Setup Node.js
+    - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
-        node-version: 22.x
+        node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        
+
     - run: npm ci
     
-    - name: Build project
-      run: npm run build
-      
-    - name: Run tests
-      run: npm test
-      
-  deploy:
-    needs: build-and-test
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Deploying..."
+    # Add verification step to confirm variables are set
+    - name: Verify environment variables
+      run: |
+        echo "FIREBASE_API_KEY: ${NEXT_PUBLIC_FIREBASE_API_KEY:0:5}...${NEXT_PUBLIC_FIREBASE_API_KEY: -5}"
+        echo "API_BASE_URL: $NEXT_PUBLIC_API_BASE_URL"
+
+    - run: npm run build --if-present
+    
+    - run: npm test
