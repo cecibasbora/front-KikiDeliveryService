@@ -24,7 +24,7 @@ vi.mock('firebase/auth', async (importOriginal) => {
   const actual = await importOriginal<typeof import('firebase/auth')>();
   return {
     ...actual,
-    getAuth: vi.f(() => ({})),
+    getAuth: vi.fn(() => ({})),
     GoogleAuthProvider: vi.fn(),
     signInWithPopup: vi.fn(),
     signOut: vi.fn()
